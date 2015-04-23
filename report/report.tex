@@ -1,0 +1,228 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% University/School Laboratory Report
+% LaTeX Template
+% Version 3.1 (25/3/14)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Linux and Unix Users Group at Virginia Tech Wiki 
+% (https://vtluug.org/wiki/Example_LaTeX_chem_lab_report)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass{article}
+
+%\usepackage[version=3]{mhchem} % Package for chemical equation typesetting
+%\usepackage{siunitx} % Provides the \SI{}{} and \si{} command for typesetting SI units
+\usepackage{graphicx} % Required for the inclusion of images
+%\usepackage{natbib} % Required to change bibliography style to APA
+%\usepackage{amsmath} % Required for some math elements 
+\usepackage{listings}
+\lstset{
+  breaklines=true,
+  basicstyle=\scriptsize,
+  columns=fullflexible
+}
+
+\usepackage{tikz}
+
+\setlength\parindent{0pt} % Removes all indentation from paragraphs
+
+\renewcommand{\labelenumi}{\alph{enumi}.} % Make numbering in the enumerate environment by letter rather than number (e.g. section 6)
+
+%\usepackage{times} % Uncomment to use the Times New Roman font
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT INFORMATION
+%----------------------------------------------------------------------------------------
+
+\title{Report: Homework 3 - Grid Computing}% Title
+
+\author{Jan \textsc{Schlenker}} % Author name
+
+\date{\today} % Date for the report
+
+\begin{document}
+
+\maketitle % Insert the title, author and date
+
+\begin{center}
+\begin{tabular}{l l}
+Instructor: & Dipl.-Ing. Dr. Simon Ostermann \\
+Parts solved of the sheet: & Tasks 1-3 \\
+Total points: & 10
+\end{tabular}
+\end{center}
+
+% If you wish to include an abstract, uncomment the lines below
+% \begin{abstract}
+% Abstract text
+% \end{abstract}
+
+%----------------------------------------------------------------------------------------
+%	SECTION 1
+%----------------------------------------------------------------------------------------
+
+\section{How to run the programme}
+
+First of all extract the archive file \texttt{homework\_4.tar.gz}:
+
+\begin{lstlisting}[language=bash, deletekeywords={cd}]
+  $ tar -xzf homework_4.tar.gz
+  $ cd homework_4
+\end{lstlisting}
+
+Afterwards move/copy the binary files \texttt{gm} and \texttt{povray} to the \texttt{bin/} directory and the files \texttt{scherk.args}, \texttt{scherk.ini} and \texttt{scherk.pov} to the \texttt{inputdata/} directory:
+
+\begin{lstlisting}[language=bash]
+  $ cp <gm-file-path> <povray-file-path> bin/
+  $ cp <scherk-files-dir>/scherk* inputdata/
+\end{lstlisting}
+
+At last run the gridRender.sh script:
+
+\begin{lstlisting}[language=bash]
+  $ ./gridRender.sh
+\end{lstlisting}
+
+%\begin{center}\ce{2 Mg + O2 -> 2 MgO}\end{center}
+
+% If you have more than one objective, uncomment the below:
+%\begin{description}
+%\item[First Objective] \hfill \\
+%Objective 1 text
+%\item[Second Objective] \hfill \\
+%Objective 2 text
+%\end{description}
+
+%----------------------------------------------------------------------------------------
+%	SECTION 2
+%----------------------------------------------------------------------------------------
+
+\section{Programme explanation}
+The files of the the programme are structured as follows:
+
+\begin{itemize}
+\item The \texttt{\textbf{gridRender.sh}} script contains the main programme
+\item The \texttt{\textbf{bin}} directory contains the binaries \texttt{povray} and \texttt{gm} which will be copied to the grid instances
+\item The \texttt{\textbf{inputdata}} directory contains the necessary files for the \texttt{povray} binary which will be copied to the grid instances
+\end{itemize}
+
+Below is the programme explanation task by task:
+
+\begin{itemize}
+
+\item \textbf{Task 1:} The \texttt{gridRender.sh} script just creates a proxy and copies the files to the appropriate instancens. One interesting thing to mention is the grid resource \texttt{login.leo1.uibk.ac.at}, because for running jobs on this resource the addition \texttt{/jobmanager-sge} is compulsory.
+\item \textbf{Task 2:} The \texttt{gridRender.sh} script executes a \texttt{globus}-job for each resource with a specific subset of frames. The merging of the images is done on the \texttt{karwendel} machine, after all files have been copied to it.
+\item \textbf{Task 3:} The \texttt{gridRender.sh} script takes timestamps before and after each grid-resource execution. The results are described in the next section.
+
+\end{itemize}
+
+
+%----------------------------------------------------------------------------------------
+%	SECTION 3
+%----------------------------------------------------------------------------------------
+
+\section{Results}
+
+The environment contains 3 grid resources, 2 were used for measurements:
+
+\begin{itemize}
+\item \texttt{kar\-wen\-del.\-dps.\-uibk.\-ac.\-at} 
+\item \texttt{login.\-leo1.\-uibk.\-ac.\-at/\-jobmanager-sge}
+\end{itemize}
+
+Only one processor of each machine got a grid job, so that there is a better comparison between the resources. For faster results it would be much better to make use of all processors.
+\\
+\\
+Measurement were made for 8, 16, 32, 64 and 128 frames. Table~\ref{tab:measurements} shows the measurement results, where T$_k$ is the execution time of the \texttt{karwendel} machine and T$_L$ the execution time of the \texttt{leo1} machine (both without copying the results to the image merge machine).
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ | c | c | c | p{2.5cm} | p{2.5cm} |}
+\hline
+\textbf{Frames} & \textbf{T$_K$} in s & \textbf{T$_{L}$} in s & \textbf{T$_{K}$/(Frames)}/2 in s & \textbf{T$_{L}$/(Frames)}/2 in s \\
+\hline \hline
+8 & 81,47 & 91,14 & 20,37 & 22,79 \\
+\hline
+16 & 141,70 & 171,25 & 17,71 & 21,41 \\
+\hline
+32 & 272,36 & 301,54 & 17,02 & 18,85 \\
+\hline
+64 & 543,87 & 602,28 & 17,00 & 18,82 \\
+\hline
+128  & 1066,39 & 1153,45 & 16,67 & 18,02 \\
+\hline
+%32 & 32 & 582,99 & 75,93 & 7,68 & 0,19 \\
+%\hline
+%64 & 40 & 1161,30 & 141,94 & 8,18 & 0,20 \\
+%\hline
+%128 & 40 & 2319,09 & 277,01 & 8,37 & 0,21 \\
+%\hline
+\end{tabular}
+\caption{Measurements}
+\label{tab:measurements}
+\end{table}
+
+The \texttt{karwendel} machine processor seems to be faster than the \texttt{leo1} machine one. While the number of frames increases the time/frame decreases for both machines. This is probably due to the relatively lesser job submitting overhead.
+\\
+\\
+For a load imbalance as little as possible the time/frame and the measurement with the largest number of frames (smallest uncertainty) are crucial. The best distribution for 128 frames for the same environment and the same condition would be:
+\\
+\\
+\(karwendel = \frac{18,02}{16,67 + 18,02} = 52\% \)
+\\
+\\
+\(leo1      = \frac{16,67}{16,67 + 18,02} = 48\% \)
+\\
+\\
+Of course the utilization of all processors of all machines would reveal another result.
+%Because of this reaction, the required ratio is the atomic weight of magnesium: \SI{16.00}{\gram} of oxygen as experimental mass of Mg: experimental mass of oxygen or $\frac{x}{1.31}=\frac{16}{0.87}$ from which, $M_{\ce{Mg}} = 16.00 \times \frac{1.31}{0.87} = 24.1 = \SI{24}{\gram\per\mole}$ (to two significant figures).
+
+%----------------------------------------------------------------------------------------
+%	SECTION 4
+%----------------------------------------------------------------------------------------
+
+%\section{Results and Conclusions}
+
+%The atomic weight of magnesium is concluded to be \SI{24}{\gram\per\mol}, as determined by the stoichiometry of its chemical combination with oxygen. This result is in agreement with the accepted value.
+
+%\begin{figure}[h]
+%\begin{center}
+%\includegraphics[width=0.65\textwidth]{placeholder} % Include the image placeholder.png
+%\caption{Figure caption.}
+%\end{center}
+%\end{figure}
+%
+%----------------------------------------------------------------------------------------
+%	SECTION 5
+%----------------------------------------------------------------------------------------
+
+%\section{Discussion of Experimental Uncertainty}
+
+%The accepted value (periodic table) is \SI{24.3}{\gram\per\mole} \cite{Smith:2012qr}. The percentage discrepancy between the accepted value and the result obtained here is 1.3\%. Because only a single measurement was made, it is not possible to calculate an estimated standard deviation.
+
+%The most obvious source of experimental uncertainty is the limited precision of the balance. Other potential sources of experimental uncertainty are: the reaction might not be complete; if not enough time was allowed for total oxidation, less than complete oxidation of the magnesium might have, in part, reacted with nitrogen in the air (incorrect reaction); the magnesium oxide might have absorbed water from the air, and thus weigh ``too much." Because the result obtained is close to the accepted value it is possible that some of these experimental uncertainties have fortuitously cancelled one another.
+
+
+%----------------------------------------------------------------------------------------
+%	BIBLIOGRAPHY
+%----------------------------------------------------------------------------------------
+
+%\bibliographystyle{apalike}
+
+%\bibliography{sample}
+
+%----------------------------------------------------------------------------------------
+
+
+\end{document}
